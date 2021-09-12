@@ -16,26 +16,35 @@ def create_notebook():
 
 
 def delete_notebook():
-    title = input("Title of the notebook you want to delete: ")
-    cwd = os.getcwd()
-    path = cwd + "/" + title
+    notebook_list = os.listdir()
+    print("Number of notebooks: ", len(notebook_list))
+    for x in range(len(notebook_list)):
+        print(f"{x+1}: {notebook_list[x]}")
+
+    name = input("Title of the notebook you want to delete: ")
+
     try:
-        shutil.rmtree(path)
+        if name.isnumeric() and 0 < int(name) <= len(notebook_list):
+            shutil.rmtree(notebook_list[int(name) - 1])
+        else:
+            shutil.rmtree(name)
     except OSError:
-        print("Could not delete notebook: ", title)
+        print("Could not delete notebook: ", name)
     else:
-        print("Successfully deleted notebook: ", title)
+        print("Successfully deleted notebook: ", name)
 
 
 def open_notebook():
     notebook_list = os.listdir()
     cwd = os.getcwd()
     print("Number of notebooks: ", len(notebook_list))
-    for notebook in notebook_list:
-        print(notebook)
+    for x in range(len(notebook_list)):
+        print(f"{x+1}: {notebook_list[x]}")
 
-    name = input("Name of notebook: ")
-    if os.path.exists(name):
+    name = input("Number/Name of notebook: ")
+    if name.isnumeric() and 0 < int(name) <= len(notebook_list):
+        os.chdir(notebook_list[int(name) - 1])
+    elif os.path.exists(name):
         os.chdir(name)
     else:
         print("The notebook does not exist.")
@@ -94,23 +103,36 @@ def add_note():
 
 
 def delete_note():
-    filename = input("Name of note you want to delete: ") + '.txt'
-    if os.path.exists(filename):
+    notes_list = os.listdir()
+    for x in range(len(notes_list)):
+        print(f"{x+1}: {notes_list[x]}")
+
+    filename = input("Name of note you want to delete: ")
+    if filename.isnumeric() and 0 < int(filename) <= len(notes_list):
+        os.remove(notes_list[int(filename) - 1])
+    elif os.path.exists(filename):
         os.remove(filename)
-        print(f"Sucessfully deleted {filename}")
     else:
         print("The note does note exist.")
         return
 
+    print(f"Sucessfully deleted {filename}")
+
 
 def read_note():
-    title = input("Note to read: ") + '.txt'
-    if os.path.exists(title):
-        note = open(title, "r")
-        print(note.read())
+    notes_list = os.listdir()
+    for x in range(len(notes_list)):
+        print(f"{x+1}: {notes_list[x]}")
+
+    name = input("Note to read: ")
+    if name.isnumeric() and 0 < int(name) <= len(notes_list):
+        note = open(notes_list[int(name) - 1], 'r')
+    elif os.path.exists(name):
+        note = open(name, 'r')
     else:
         print("The note does not exist.")
         return
+    print(note.read())
 
 
 def gen_key():
@@ -145,26 +167,36 @@ def load_key():
 def encrypt_note():
     key = load_key()
     f = Fernet(key)
+    notes_list = os.listdir()
+    for x in range(len(notes_list)):
+        print(f"{x+1}: {notes_list[x]}")
+
     title = input("Note to encrypt: ")
-    filename = title + ".txt"
-    with open(filename, "rb") as file:
+    if title.isnumeric() and 0 < int(title) <= len(notes_list):
+        title = notes_list[int(title) - 1]
+
+    with open(title, "rb") as file:
         file_data = file.read()
     encrypted_data = f.encrypt(file_data)
-    with open(filename, "wb") as file:
+    with open(title, "wb") as file:
         file.write(encrypted_data)
 
 
 def decrypt_note():
     key = load_key()
     f = Fernet(key)
+    notes_list = os.listdir()
+    for x in range(len(notes_list)):
+        print(f"{x+1}: {notes_list[x]}")
+
     title = input("Note to decrypt: ")
-    filename = title + ".txt"
-    with open(filename, "rb") as file:
+    if title.isnumeric() and 0 < int(title) <= len(notes_list):
+        title = notes_list[int(title) - 1]
+
+    with open(title, "rb") as file:
         encrypted_data = file.read()
-
     decrypted_data = f.decrypt(encrypted_data)
-
-    with open(filename, "wb") as file:
+    with open(title, "wb") as file:
         file.write(decrypted_data)
 
 
@@ -201,6 +233,6 @@ while True:
 # Solution to if you add a note/notebook that already exists.
 # Command to list available notes.
 # Improve the cryptography (save different keys etc.)
-# Not needing to write whole note/notebook name.
+# Add success/error messages
 # Find/fix bugs
 # Code optimization
