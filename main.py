@@ -4,7 +4,7 @@ import shutil
 from cryptography.fernet import Fernet
 
 
-def create_notebook():
+def create_notebook():      # Creates a notebook (folder)
     name = input("Title of notebook: ")
 
     try:
@@ -15,26 +15,26 @@ def create_notebook():
         print(f"Sucessfully created the notebook: {name}")
 
 
-def delete_notebook():
+def delete_notebook():              # Deletes a notebook (folder)
     notebook_list = os.listdir()
     print("Number of notebooks: ", len(notebook_list))
-    for x in range(len(notebook_list)):
+    for x in range(len(notebook_list)):                     # Lists available notebooks
         print(f"{x+1}: {notebook_list[x]}")
 
     name = input("Title of the notebook you want to delete: ")
 
     try:
-        if name.isnumeric() and 0 < int(name) <= len(notebook_list):
-            shutil.rmtree(notebook_list[int(name) - 1])
+        if name.isnumeric() and 0 < int(name) <= len(notebook_list):    # Deletes the correct notebook if
+            shutil.rmtree(notebook_list[int(name) - 1])                 # the input is a number
         else:
-            shutil.rmtree(name)
+            shutil.rmtree(name)                                         # Deletes correct notebook if input is the name
     except OSError:
         print("Could not delete notebook: ", name)
     else:
         print("Successfully deleted notebook: ", name)
 
 
-def open_notebook():
+def open_notebook():        # Opens a notebook (folder)
     notebook_list = os.listdir()
     cwd = os.getcwd()
     print("Number of notebooks: ", len(notebook_list))
@@ -52,10 +52,10 @@ def open_notebook():
 
     notes_list = os.listdir()
     print("Number of notes: ", len(notes_list))
-    for notes in notes_list:
+    for notes in notes_list:        # Displays the notes in the current notebook
         print(notes)
 
-    while True:
+    while True:                     # Displays the options in the current notebook
         print("Options:\n"
               "1. Create a note\n"
               "2. Read a note\n"
@@ -82,17 +82,17 @@ def open_notebook():
             return
 
 
-def add_note():
+def add_note():     # Takes user input as a string and saves it to a note (.txt file)
     title = input("Title of note: ")
     user_input = input("Write your text: ")
     filename = title.replace(" ", "") + ".txt"
     note = open(filename, "a")
-    note.write(str(datetime.datetime.now()) + "\n")
+    note.write(str(datetime.datetime.now()) + "\n")     # Marks the note with the current date and time
     note.write(title + "\n")
 
     characters = 0
-    for i in range(0, len(user_input)):
-        if user_input[i] == " " and characters >= 40:
+    for i in range(0, len(user_input)):                 # After every 40 characters it makes a linebreak instead
+        if user_input[i] == " " and characters >= 40:   # of a space.
             note.write('\n')
             characters = 0
         else:
@@ -136,14 +136,14 @@ def read_note():
 
 
 def gen_key():
-    key = Fernet.generate_key()
+    key = Fernet.generate_key()                 # Generates a new encryption key
     answer = input(f"Your key is: {key.decode()}\nDo you want to save it (y/n)?")
     if answer == "y":
-        with open("key.key", "wb") as key_file:
+        with open("key.key", "wb") as key_file:     # Saves it to a file
             key_file.write(key)
 
 
-def load_key():
+def load_key():     # Loads a saved en/decryption key or gives the option to generate a new one
     while True:
         answer = input("Do you want to load the saved key (y/n)? ")
         if answer == "y":
@@ -200,14 +200,14 @@ def decrypt_note():
         file.write(decrypted_data)
 
 
-def init():
-    if not os.path.exists('Notebooks'):
+def init():                                 # Initialization func. Creates the folder "Notebooks" if it doesn't exist
+    if not os.path.exists('Notebooks'):     # and changes working dir to the folder.
         os.makedirs('Notebooks')
 
     os.chdir('Notebooks')
 
 
-def options():
+def options():  # Shows notebook options.
     while True:
         print("Options:\n"
               "1. Create a notebook\n"
@@ -224,12 +224,18 @@ def options():
             print("Answer with a number between 1 and 3\n")
 
 
-init()
-while True:
-    options()
+def main():
+    init()
+    while True:
+        options()
+
+
+if __name__ == "__main__":
+    main()
+
 
 # TODO:
-# Add comments to the code.
+# Improve load_key func (not possible to enter invalid key, possible to exit the func)
 # Solution to if you add a note/notebook that already exists.
 # Command to list available notes.
 # Improve the cryptography (save different keys etc.)
